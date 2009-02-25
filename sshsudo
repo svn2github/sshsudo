@@ -1,6 +1,6 @@
 #!/bin/bash 
 #
-# rsudo: 1.0
+# sshsudo: 1.0
 # Author: jiwu.liu@gmail.com
 #
 #   The script executes sudo command on one or more remote computers. 
@@ -19,8 +19,8 @@
 #        literal meanings. In the case when they are needed, use a script 
 #        instead of a command. 
 # 
-# Example:rsudo foo@bar.net apt-get check 
-#         rsudo -r foo@bar.net myscript.sh
+# Example:sshsudo foo@bar.net apt-get check 
+#         sshsudo -r foo@bar.net myscript.sh
 
  
 usage()
@@ -58,7 +58,7 @@ pipewrap()
     done
 }
 
-rsudo ()
+runsudo ()
 {
     # receive its arguments
     ACCOUNT=$1;
@@ -171,14 +171,14 @@ echo
 # Start running
 if [ -e $ACCOUNTLIST ]; then # read accounts from a file
     for ACCOUNT in `cat $ACCOUNTLIST`; do
-        rsudo "$ACCOUNT" "$PASSWORD" "$COMMAND" "$ARGUMENTS" "$DEFAULTUSER" "$COPY" "$VERBOSE";
+        runsudo "$ACCOUNT" "$PASSWORD" "$COMMAND" "$ARGUMENTS" "$DEFAULTUSER" "$COPY" "$VERBOSE";
     done
 
 else # ACCOUNTLIST is a comma separated list of user@computer strings.
     # Change the internal separation field. 
     IFS=,
     for ACCOUNT in $ACCOUNTLIST; do
-        rsudo "$ACCOUNT" "$PASSWORD" "$COMMAND" "$ARGUMENTS" "$DEFAULTUSER" "$COPY" "$VERBOSE";
+        runsudo "$ACCOUNT" "$PASSWORD" "$COMMAND" "$ARGUMENTS" "$DEFAULTUSER" "$COPY" "$VERBOSE";
     done
 fi
 #EOF
