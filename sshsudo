@@ -25,7 +25,7 @@
  
 usage()
 {
-    ProgName=$1;
+    local ProgName=$1;
     echo "Usage: $ProgName -r -v [-u user] AccountList  Command [Arguments]"
     echo "       -u Set the default user unless it is given within remote account list"
     echo "       -r Copy the command(usually the path to local script) to remote computers before execution"
@@ -43,7 +43,7 @@ pipewrap()
     # After initially insert the password, it simply copy input from terminal 
     # and send it to ssh command directly
     echo $1  # which is password
-    lockFile=$2;
+    local lockFile=$2;
     while true; do
         # The function will exit when output pipe is closed, 
         if [ ! -e $lockFile ]; then
@@ -61,19 +61,19 @@ pipewrap()
 runsudo ()
 {
     # receive its arguments
-    ACCOUNT=$1;
-    PASSWORD=$2;
-    COMMAND=$3;
-    ARGUMENTS=$4;
-    DEFAULTUSER=$5;
-    COPY=$6;
-    VERBOSE=$7;
+    local ACCOUNT=$1;
+    local PASSWORD=$2;
+    local COMMAND=$3;
+    local ARGUMENTS=$4;
+    local DEFAULTUSER=$5;
+    local COPY=$6;
+    local VERBOSE=$7;
 
     # Parse account which has the form user@computer.domain
-    REMOTEUSER=${ACCOUNT%%@*}
-    REMOTECOMPUTER=${ACCOUNT#*@}
-    REMOTESCRIPT=
-    REMOTECOMMAND=$COMMAND
+    local REMOTEUSER=${ACCOUNT%%@*}
+    local REMOTECOMPUTER=${ACCOUNT#*@}
+    local REMOTESCRIPT=
+    local REMOTECOMMAND=$COMMAND
     if [ $REMOTEUSER = $REMOTECOMPUTER ]; then
         # There is no @, i.e., only computer name is given
         REMOTEUSER=$DEFAULTUSER
@@ -92,12 +92,12 @@ runsudo ()
     fi
 
     # Assume we are lucky, result is fine. 
-    RES=DONE
+    local RES=DONE
     # Invalidate the sudo timestamp. Simplify the situation. Henceforth sudo always ask for a password 
     sshpass -p "$PASSWORD" ssh "$REMOTEUSER@$REMOTECOMPUTER" "sudo -K"
 
     # Use lock file to inform pipewrap function to exit. 
-    lockFile=`mktemp`
+    local lockFile=`mktemp`
     eval pipewrap '$PASSWORD' '$lockFile' | (sshpass -p "$PASSWORD" ssh  "$REMOTEUSER@$REMOTECOMPUTER" "sudo -S '$REMOTECOMMAND' $ARGUMENTS"; rm "$lockFile")
 
     if [ $? -ne 0 ]; then
